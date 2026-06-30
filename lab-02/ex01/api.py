@@ -7,15 +7,26 @@ sys.path.append(
     )
 )
 
+from cipher.playfair import PlayfairCipher
 from cipher.vigenere import VigenereCipher
 from flask import Flask, request, jsonify
 from cipher.caesar_cipher import CaesarCipher
 app = Flask(__name__)
 
+playfair_cipher = PlayfairCipher()
 #
 vigenere_cipher = VigenereCipher()
 # CAESAR CIPHER ALGORITHM
 caesar_cipher = CaesarCipher()
+
+@app.route("/api/playfair/creatematrix", methods=["POST"])
+def playfair_creatematrix():
+    data = request.json
+    key = data["key"]
+    playfair_matrix = playfair_cipher.create_playfair_matrix(key)
+    return jsonify({ "playfair_matrix": playfair_matrix})
+
+
 
 
 @app.route("/api/caesar/encrypt", methods=["POST"])
