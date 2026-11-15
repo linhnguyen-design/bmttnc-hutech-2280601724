@@ -70,7 +70,6 @@ class Ui_MainWindow(object):
         self.btnEncrypt.setText(_translate("MainWindow", "Encrypt"))
         self.btnDecrypt.setText(_translate("MainWindow", "Decrypt"))
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

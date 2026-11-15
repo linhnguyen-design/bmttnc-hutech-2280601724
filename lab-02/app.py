@@ -1,41 +1,79 @@
-from flask import Flask, render_template, request, json
+
+from flask import Flask, request, jsonify
 from cipher.caesar_cipher import CaesarCipher
 
 app = Flask(__name__)
 
-# router routes for home page
+
+# Trang chu
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return "Caesar Cipher API is running!"
 
 
-# router routes for caesar cypher
-@app.route('/caesar')
-def caesar():
-    return render_template('caesar.html')
-
-
-@app.route('/encrypt', methods=['POST'])
+# Ma hoa Caesar
+@app.route('/api/caesar/encrypt', methods=['POST'])
 def caesar_encrypt():
-    text = request.form['inputPlainText']
-    key = int(request.form['inputKeyPlain'])
+    try:
+        data = request.get_json()
 
-    caesar = CaesarCipher()
-    encrypted_text = caesar.encrypt_text(text, key)
+        if not data:
+            return jsonify({"error": "Missing JSON data"}), 400
 
-    return f"text : {text}<br/>key: {key}<br/>encrypted text: {encrypted_text}"
+        text = data.get("plain_text", "")
+        key = int(data.get("key"))
+
+        caesar = CaesarCipher()
+        encrypted_text = caesar.encrypt_text(text, key)
+
+        return jsonify({
+            "encrypted_message": encrypted_text
+        }), 200
+
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Key must be an integer"
+        }), 400
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 
-@app.route('/decrypt', methods=['POST'])
+# Giai ma Caesar
+@app.route('/api/caesar/decrypt', methods=['POST'])
 def caesar_decrypt():
-    text = request.form['inputCipherText']
-    key = int(request.form['inputKeyCipher'])
+    try:
+        data = request.get_json()
 
-    caesar = CaesarCipher()
-    decrypted_text = caesar.decrypt_text(text, key)
+        if not data:
+            return jsonify({"error": "Missing JSON data"}), 400
 
-    return f"text : {text}<br/>key: {key}<br/>decrypted text: {decrypted_text}"
+        text = data.get("cipher_text", "")
+        key = int(data.get("key"))
+
+        caesar = CaesarCipher()
+        decrypted_text = caesar.decrypt_text(text, key)
+
+        return jsonify({
+            "decrypted_message": decrypted_text
+        }), 200
+
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Key must be an integer"
+        }), 400
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5050, debug=True)
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=True
+    )
