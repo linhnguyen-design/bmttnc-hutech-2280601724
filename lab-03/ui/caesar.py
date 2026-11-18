@@ -1,0 +1,153 @@
+# -*- coding: utf-8 -*-
+
+import os
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "../platforms"
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_MainWindow(object):
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(964, 600)
+
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+
+        self.txt_plain_text = QtWidgets.QLabel(self.centralwidget)
+        self.txt_plain_text.setGeometry(QtCore.QRect(30, 100, 71, 16))
+        self.txt_plain_text.setObjectName("txt_plain_text")
+
+        self.txt_key = QtWidgets.QLineEdit(self.centralwidget)
+        self.txt_key.setGeometry(QtCore.QRect(30, 210, 31, 16))
+        self.txt_key.setObjectName("txt_key")
+
+        self.txt_cipher_text = QtWidgets.QLabel(self.centralwidget)
+        self.txt_cipher_text.setGeometry(QtCore.QRect(20, 300, 71, 21))
+        self.txt_cipher_text.setObjectName("txt_cipher_text")
+
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(130, 90, 691, 87))
+        self.textEdit.setObjectName("textEdit")
+
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(130, 210, 691, 31))
+        self.lineEdit.setObjectName("lineEdit")
+
+        self.textEdit_2 = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit_2.setGeometry(QtCore.QRect(130, 290, 691, 87))
+        self.textEdit_2.setObjectName("textEdit_2")
+
+        self.btn_encrypt = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_encrypt.setGeometry(QtCore.QRect(130, 460, 93, 28))
+        self.btn_encrypt.setObjectName("btn_encrypt")
+
+        self.btn_decrypt = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_decrypt.setGeometry(QtCore.QRect(600, 460, 93, 28))
+        self.btn_decrypt.setObjectName("btn_decrypt")
+
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(400, 40, 111, 16))
+
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 964, 26))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        # Ket noi nut bam
+        self.btn_encrypt.clicked.connect(self.encrypt)
+        self.btn_decrypt.clicked.connect(self.decrypt)
+
+    # Ham ma hoa Caesar
+    def encrypt(self):
+        text = self.textEdit.toPlainText()
+
+        try:
+            key = int(self.lineEdit.text())
+        except ValueError:
+            QtWidgets.QMessageBox.warning(
+                None, "Loi", "Vui long nhap khoa la so nguyen!"
+            )
+            return
+
+        result = ""
+
+        for char in text:
+            if char.isupper():
+                result += chr((ord(char) - 65 + key) % 26 + 65)
+            elif char.islower():
+                result += chr((ord(char) - 97 + key) % 26 + 97)
+            else:
+                result += char
+
+        self.textEdit_2.setPlainText(result)
+
+    # Ham giai ma Caesar
+    def decrypt(self):
+        text = self.textEdit_2.toPlainText()
+
+        try:
+            key = int(self.lineEdit.text())
+        except ValueError:
+            QtWidgets.QMessageBox.warning(
+                None, "Loi", "Vui long nhap khoa la so nguyen!"
+            )
+            return
+
+        result = ""
+
+        for char in text:
+            if char.isupper():
+                result += chr((ord(char) - 65 - key) % 26 + 65)
+            elif char.islower():
+                result += chr((ord(char) - 97 - key) % 26 + 97)
+            else:
+                result += char
+
+        self.textEdit.setPlainText(result)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
+        self.txt_plain_text.setText(_translate("MainWindow", "Plain Text"))
+        self.txt_key.setText(_translate("MainWindow", ""))
+        self.txt_cipher_text.setText(_translate("MainWindow", "CipherText"))
+
+        self.btn_encrypt.setText(_translate("MainWindow", "Encrypt"))
+        self.btn_decrypt.setText(_translate("MainWindow", "Decrypt"))
+
+        self.label.setText(_translate("MainWindow", "CAESAR CIPHER"))
+
+
+if __name__ == "__main__":
+    import sys
+
+    app = QtWidgets.QApplication(sys.argv)
+
+    MainWindow = QtWidgets.QMainWindow()
+
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+
+    MainWindow.show()
+
+    sys.exit(app.exec_())
