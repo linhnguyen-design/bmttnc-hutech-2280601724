@@ -1,0 +1,95 @@
+import os
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "../platforms"
+
+# -*- coding: utf-8 -*-
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1052, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.txt_plain = QtWidgets.QLabel(self.centralwidget)
+        self.txt_plain.setGeometry(QtCore.QRect(30, 120, 71, 16))
+        self.txt_plain.setObjectName("txt_plain")
+        self.txt_cipher = QtWidgets.QLabel(self.centralwidget)
+        self.txt_cipher.setGeometry(QtCore.QRect(30, 230, 81, 16))
+        self.txt_cipher.setObjectName("txt_cipher")
+        self.txt_info = QtWidgets.QLabel(self.centralwidget)
+        self.txt_info.setGeometry(QtCore.QRect(550, 110, 81, 16))
+        self.txt_info.setObjectName("txt_info")
+        self.txt_signature = QtWidgets.QLabel(self.centralwidget)
+        self.txt_signature.setGeometry(QtCore.QRect(560, 240, 71, 16))
+        self.txt_signature.setObjectName("txt_signature")
+        self.btn_gen_keys = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_gen_keys.setGeometry(QtCore.QRect(570, 20, 93, 28))
+        self.btn_gen_keys.setObjectName("btn_gen_keys")
+        self.btn_decrypt = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_decrypt.setGeometry(QtCore.QRect(330, 380, 93, 28))
+        self.btn_decrypt.setObjectName("btn_decrypt")
+        self.btn_sign = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_sign.setGeometry(QtCore.QRect(560, 380, 93, 28))
+        self.btn_sign.setObjectName("btn_sign")
+        self.btn_verify = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_verify.setGeometry(QtCore.QRect(840, 380, 93, 28))
+        self.btn_verify.setObjectName("btn_verify")
+        self.btn_encrypt = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_encrypt.setGeometry(QtCore.QRect(20, 380, 93, 28))
+        self.btn_encrypt.setObjectName("btn_encrypt")
+        self.txt_plain_2 = QtWidgets.QTextEdit(self.centralwidget)
+        self.txt_plain_2.setGeometry(QtCore.QRect(110, 110, 391, 87))
+        self.txt_plain_2.setObjectName("txt_plain_2")
+        self.txt_cipher_2 = QtWidgets.QTextEdit(self.centralwidget)
+        self.txt_cipher_2.setGeometry(QtCore.QRect(120, 240, 381, 87))
+        self.txt_cipher_2.setObjectName("txt_cipher_2")
+        self.txt_sig = QtWidgets.QTextEdit(self.centralwidget)
+        self.txt_sig.setGeometry(QtCore.QRect(630, 240, 381, 87))
+        self.txt_sig.setObjectName("txt_sig")
+        self.txt_info_2 = QtWidgets.QTextEdit(self.centralwidget)
+        self.txt_info_2.setGeometry(QtCore.QRect(630, 110, 371, 87))
+        self.txt_info_2.setObjectName("txt_info_2")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(430, 26, 91, 20))
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1052, 26))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.txt_plain.setText(_translate("MainWindow", "Plain Text"))
+        self.txt_cipher.setText(_translate("MainWindow", "Cipher Text"))
+        self.txt_info.setText(_translate("MainWindow", "Information"))
+        self.txt_signature.setText(_translate("MainWindow", "Signature"))
+        self.btn_gen_keys.setText(_translate("MainWindow", "Generate Keys"))
+        self.btn_decrypt.setText(_translate("MainWindow", "Decrypt"))
+        self.btn_sign.setText(_translate("MainWindow", "Sign"))
+        self.btn_verify.setText(_translate("MainWindow", "Verify"))
+        self.btn_encrypt.setText(_translate("MainWindow", "Encrypt"))
+        self.label.setText(_translate("MainWindow", "RSA_CIPHER"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

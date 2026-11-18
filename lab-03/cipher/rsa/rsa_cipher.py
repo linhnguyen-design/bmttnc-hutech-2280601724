@@ -1,178 +1,70 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from ui.rsa import Ui_MainWindow
-import requests
+import rsa
+import os
+import binascii
 
-class MyApp(QMainWindow):
+class RSACipher:
+
     def __init__(self):
-        super().__init__()
+        self.key_folder = os.path.join(
+            os.path.dirname(__file__), "keys"
+        )
+        os.makedirs(self.key_folder, exist_ok=True)
 
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.public_key_path = os.path.join(
+            self.key_folder, "publicKey.pem"
+        )
+        self.private_key_path = os.path.join(
+            self.key_folder, "privateKey.pem"
+        )
 
-        self.ui.btngenkeys.clicked.connect(self.call_api_gen_keys)
-        self.ui.btnEncrypt.clicked.connect(self.call_api_encrypt)
-        self.ui.btnDecrypt.clicked.connect(self.call_api_decrypt)
-        self.ui.btnsign.clicked.connect(self.call_api_sign)
-        self.ui.btnverify.clicked.connect(self.call_api_verify)
+    def generate_keys(self):
+        public_key, private_key = rsa.newkeys(2048)
 
-    # Generate RSA Keys
-    def call_api_gen_keys(self):
-        url = "http://127.0.0.1:5000/api/rsa/generate_keys"
+        with open(self.public_key_path, "wb") as f:
+            f.write(public_key.save_pkcs1("PEM"))
 
+        with open(self.private_key_path, "wb") as f:
+            f.write(private_key.save_pkcs1("PEM"))
+
+    def load_keys(self):
+        with open(self.public_key_path, "rb") as f:
+            public_key = rsa.PublicKey.load_pkcs1(f.read())
+
+        with open(self.private_key_path, "rb") as f:
+            private_key = rsa.PrivateKey.load_pkcs1(f.read())
+
+        return public_key, private_key
+
+    def encrypt(self, message, key):
+        encrypted = rsa.encrypt(
+            message.encode("utf-8"), key
+        )
+        return binascii.hexlify(encrypted).decode("utf-8")
+
+    def decrypt(self, cipher_text, key):
+        encrypted = binascii.unhexlify(cipher_text)
+        decrypted = rsa.decrypt(encrypted, key)
+        return decrypted.decode("utf-8")
+
+    def sign(self, message, private_key):
+        signature = rsa.sign(
+            message.encode("utf-8"),
+            private_key,
+            "SHA-256"
+        )
+        return binascii.hexlify(signature).decode("utf-8")
+
+    def verify(self, message, signature, public_key):
         try:
-            response = requests.get(url)
+            signature_bytes = binascii.unhexlify(signature)
 
-            if response.status_code == 200:
-                data = response.json()
+            result = rsa.verify(
+                message.encode("utf-8"),
+                signature_bytes,
+                public_key
+            )
 
-                QMessageBox.information(
-                    self,
-                    "Generate Keys",
-                    data["message"]
-                )
-            else:
-                print("Error while calling API")
+            return result == "SHA-256"
 
-        except requests.exceptions.RequestException as e:
-            print("Error:", e)
-
-
-    # Encrypt
-    def call_api_encrypt(self):
-        url = "http://127.0.0.1:5000/api/rsa/encrypt"
-
-        payload = {
-            "message": self.ui.txt_plain_text.toPlainText(),
-            "key_type": "public"
-        }
-
-        try:
-            response = requests.post(url, json=payload)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                self.ui.txt_cipher_text.setText(
-                    data["encrypted_message"]
-                )
-
-                QMessageBox.information(
-                    self,
-                    "Encrypt",
-                    "Encrypted Successfully"
-                )
-
-            else:
-                print("Error while calling API")
-
-        except requests.exceptions.RequestException as e:
-            print("Error:", e)
-
-
-    # Decrypt
-    def call_api_decrypt(self):
-        url = "http://127.0.0.1:5000/api/rsa/decrypt"
-
-        payload = {
-            "ciphertext": self.ui.txt_cipher_text.toPlainText(),
-            "key_type": "private"
-        }
-
-        try:
-            response = requests.post(url, json=payload)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                self.ui.txt_plain_text.setText(
-                    data["decrypted_message"]
-                )
-
-                QMessageBox.information(
-                    self,
-                    "Decrypt",
-                    "Decrypted Successfully"
-                )
-
-            else:
-                print("Error while calling API")
-
-        except requests.exceptions.RequestException as e:
-            print("Error:", e)
-
-
-    # Sign
-    def call_api_sign(self):
-        url = "http://127.0.0.1:5000/api/rsa/sign"
-
-        payload = {
-            "message": self.ui.txt_info.toPlainText()
-        }
-
-        try:
-            response = requests.post(url, json=payload)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                self.ui.txt_sign.setText(
-                    data["signature"]
-                )
-
-                QMessageBox.information(
-                    self,
-                    "Sign",
-                    "Signed Successfully"
-                )
-
-            else:
-                print("Error while calling API")
-
-        except requests.exceptions.RequestException as e:
-            print("Error:", e)
-
-
-    # Verify
-    def call_api_verify(self):
-        url = "http://127.0.0.1:5000/api/rsa/verify"
-
-        payload = {
-            "message": self.ui.txt_info.toPlainText(),
-            "signature": self.ui.txt_sign.toPlainText()
-        }
-
-        try:
-            response = requests.post(url, json=payload)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                if data["is_verified"]:
-                    QMessageBox.information(
-                        self,
-                        "Verify",
-                        "Verified Successfully"
-                    )
-                else:
-                    QMessageBox.warning(
-                        self,
-                        "Verify",
-                        "Verified Failed"
-                    )
-
-            else:
-                print("Error while calling API")
-
-        except requests.exceptions.RequestException as e:
-            print("Error:", e)
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    window = MyApp()
-    window.show()
-
-    sys.exit(app.exec_())
+        except (rsa.VerificationError, ValueError):
+            return False
