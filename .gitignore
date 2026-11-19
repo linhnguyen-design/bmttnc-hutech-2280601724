@@ -1,3 +1,30 @@
-# Compiled Python files
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets and generated cryptographic keys
+.env
+*.pem
+*.key
+*.p12
+*.pfx
+!lab-04/dh_key_pair/server_public_key.pem
+
+# Generated files
+*.log
